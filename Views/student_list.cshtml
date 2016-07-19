@@ -1,12 +1,12 @@
 <h3>List of students enrolled on @Model["course"].GetCourseName()</h3>
-@if (Model["student"].Count == 0)
+@if (Model["courseStudent"].Count == 0)
 {
   <p>There are no students enrolled in this class</p>
 }
 else
 {
 <ul>
-  @foreach( var student in Model["student"])
+  @foreach( var student in Model["courseStudent"])
   {
     <li>@student.GetName()</li>
   }

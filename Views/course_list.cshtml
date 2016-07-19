@@ -1,0 +1,31 @@
+<h3>List of courses @Model["student"].GetName() is enrolled in.</h3>
+@if (Model["studentCourse"].Count == 0)
+{
+  <p>The student has not enrolled in any classes.</p>
+}
+else
+{
+<ul>
+  @foreach( var course in Model["studentCourse"])
+  {
+    <li>@course.GetCourseName() @course.GetCourseNumber()</li>
+  }
+</ul>
+}
+<h4>Add new class for @Model["student"].GetName()</h4>
+<form action="/courses/add" method="post">
+  <input type="hidden" name="student_id" value="@Model["student"].GetId()">
+  <select id='course_name_add' name='course_name_add' type='text'>
+    @foreach (var course in @Model["allCourses"])
+    {
+      <option value='@course.GetCourseName()'>@course.GetCourseName()</option>
+    }
+  </select>
+  <select id='course_number_add' name='course_number_add' type='text'>
+    @foreach (var course in @Model["allCourses"])
+    {
+      <option value='@course.GetCourseNumber()'>@course.GetCourseNumber()</option>
+    }
+  </select>
+  <button type="submit">Add new course</button>
+</form>
