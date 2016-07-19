@@ -179,57 +179,29 @@ namespace University
     SqlDataReader rdr = null;
     conn.Open();
 
-    SqlCommand cmd = new SqlCommand("SELECT student_id FROM courses_students WHERE course_id = @CourseId;", conn);
+    SqlCommand cmd = new SqlCommand("SELECT students.* FROM courses JOIN courses_students ON (courses.id = courses_students.course_id) JOIN students ON (courses_students.student_id = students.id) WHERE courses.id = @CourseId;", conn);
 
     SqlParameter courseIdParameter = new SqlParameter();
     courseIdParameter.ParameterName = "@CourseId";
-    courseIdParameter.Value = this.GetId();
+    courseIdParameter.Value = this.GetId().ToString();
     cmd.Parameters.Add(courseIdParameter);
 
     rdr = cmd.ExecuteReader();
 
-    List<int> studentIds = new List<int> {};
+    List<Student> Student = new List<Student> {};
 
     while (rdr.Read())
     {
       int studentId = rdr.GetInt32(0);
-      studentIds.Add(studentId);
+      string studentName = rdr.GetString(1);
+      Student newStudent = new Student(studentName, studentId);
+      Student.Add(newStudent);
     }
     if (rdr != null)
     {
       rdr.Close();
     }
-
-    List<Student> students = new List<Student> {};
-
-    foreach (int studentId in studentIds)
-    {
-      SqlDataReader queryReader = null;
-      SqlCommand studentQuery = new SqlCommand("SELECT * FROM students WHERE id = @StudentId;", conn);
-
-      SqlParameter studentIdParameter = new SqlParameter();
-      studentIdParameter.ParameterName = "@StudentId";
-      studentIdParameter.Value = studentId;
-      studentQuery.Parameters.Add(studentIdParameter);
-
-      queryReader = studentQuery.ExecuteReader();
-      while (queryReader.Read())
-      {
-        int thisStudentId = queryReader.GetInt32(0);
-        string studentName = queryReader.GetString(1);
-        Student foundStudent = new Student(studentName, thisStudentId);
-        students.Add(foundStudent);
-      }
-      if (queryReader != null)
-      {
-        queryReader.Close();
-      }
-    }
-    if (conn != null)
-    {
-      conn.Close();
-    }
-    return students;
+    return Student;
   }
     public static void DeleteAll()
      {
