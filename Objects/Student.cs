@@ -168,57 +168,35 @@ namespace University
       SqlDataReader rdr = null;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT course_id FROM courses_students WHERE student_id = @StudentId;", conn);
+      SqlCommand cmd = new SqlCommand("SELECT courses.* FROM students JOIN courses_students ON (students.id = courses_students.student_id) JOIN courses ON (courses_students.course_id= courses.id) WHERE students.id = @StudentId", conn);
 
       SqlParameter studentIdParameter = new SqlParameter();
       studentIdParameter.ParameterName = "@StudentId";
-      studentIdParameter.Value = this.GetId();
+      studentIdParameter.Value = this.GetId().ToString();
       cmd.Parameters.Add(studentIdParameter);
 
       rdr = cmd.ExecuteReader();
 
-      List<int> courseIds = new List<int> {};
+      List<Course> course = new List<Course> {};
+
 
       while (rdr.Read())
       {
         int courseId = rdr.GetInt32(0);
-        courseIds.Add(courseId);
+        string courseName = rdr.GetString(1);
+        string courseNumber = rdr.GetString(2);
+        Course newCourse = new Course(courseName, courseNumber, courseId);
+        course.Add(newCourse);
       }
       if (rdr != null)
       {
         rdr.Close();
       }
-
-      List<Course> course = new List<Course> {};
-
-      foreach (int courseId in courseIds)
-      {
-        SqlDataReader queryReader = null;
-        SqlCommand courseQuery = new SqlCommand("SELECT * FROM courses WHERE id = @CourseId;", conn);
-
-        SqlParameter courseIdParameter = new SqlParameter();
-        courseIdParameter.ParameterName = "@CourseId";
-        courseIdParameter.Value = courseId;
-        courseQuery.Parameters.Add(courseIdParameter);
-
-        queryReader = courseQuery.ExecuteReader();
-        while (queryReader.Read())
-        {
-          int thisCourseId = queryReader.GetInt32(0);
-          string courseName = queryReader.GetString(1);
-          string courseNumber = queryReader.GetString(2);
-          Course foundCourse = new Course(courseName, courseNumber, thisCourseId);
-          course.Add(foundCourse);
-        }
-        if (queryReader != null)
-        {
-          queryReader.Close();
-        }
-      }
       if (conn != null)
       {
         conn.Close();
       }
+
       return course;
     }
   }
