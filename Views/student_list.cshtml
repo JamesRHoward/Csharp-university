@@ -19,3 +19,9 @@ else
   <input type="text" name="student_name_add">
   <button type="submit">Add new student</button>
 </form>
+<h3>Remove Students</h3>
+<form action="/student/clear/@Model" method="post">
+  <input type="hidden" name="_method" value="DELETE">
+  <button type="submit">Delete</button>
+</form>
+<p><a href="/">Back home</a></p>

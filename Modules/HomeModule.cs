@@ -68,6 +68,11 @@ namespace University
         List<Course> allCourses = Course.GetAll();
         return View["success.cshtml", allCourses];
       };
+      Delete["/student/clear/{id}"]= parameter =>{
+        Student selectedStudent = Student.Find(parameter.id);
+        selectedStudent.Delete();
+        return View ["index.cshtml"];
+      };
     }
   }
 }
